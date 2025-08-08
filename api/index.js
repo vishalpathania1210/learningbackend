@@ -9,7 +9,6 @@ const serverless = require('serverless-http');
 const app = express();
 app.use(express.json());
 
-// Connect to MongoDB (reuse connection to avoid multiple connections in serverless)
 let isConnected = false;
 async function connectDB() {
   if (isConnected) return;
@@ -18,8 +17,9 @@ async function connectDB() {
     useUnifiedTopology: true
   });
   isConnected = true;
-  console.log("✅ MongoDB connected");
-}
+ app.get('/',  (req, res) => {
+     res.status(201).json({ message: "User created successfully" });
+})}
 connectDB();
 
 // Routes
@@ -49,8 +49,7 @@ app.post('/api/users', async (req, res) => {
 app.get('/api/users', async (req, res) => {
   const users = await Users.find();
   res.json(users);
-});
+})
 
-// Export as serverless function
 module.exports = app;
 module.exports.handler = serverless(app);
